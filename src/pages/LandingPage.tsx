@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
+
 import { Modal } from '@/components/ui/Modal'
 
 type Language = 'EN' | 'MY'
@@ -10,6 +10,9 @@ export function LandingPage() {
   const [showDemoModal, setShowDemoModal] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [activeWorkflowTab, setActiveWorkflowTab] = useState<'customer' | 'manager' | 'owner'>('customer')
+  const [workflowPlaying, setWorkflowPlaying] = useState(false)
+  const workflowVideoRef = useRef<HTMLDivElement>(null)
 
   const content = {
     MY: {
@@ -21,6 +24,16 @@ export function LandingPage() {
         cta2: 'ဗီဒီယိုကြည့်ရန်'
       },
       video: { playing: 'Demo Video Playing', desc: 'သင့်လုပ်ငန်း၏ ထုတ်ကုန်မိတ်ဆက်ဗီဒီယိုကို ဤနေရာတွင် ပြသပါမည်။', replay: 'Replay intro', click: 'Click to Play Demo Video' },
+      workflow: {
+        h2: 'Workflow ဗီဒီယိုများ',
+        p: 'အသုံးပြုသူအမျိုးအစားအလိုက် InfoScan ၏ လုပ်ဆောင်ပုံကို ကြည့်ရှုပါ။',
+        tabs: {
+          customer: { label: 'Customer', title: 'ဝယ်ယူသူ အတွေ့အကြုံ', desc: 'QR Code scan ဖတ်ပြီး ပစ္စည်းအချက်အလက်များ၊ AI နှိုင်းယှဉ်ချက်များနှင့် အကြံပြုချက်များကို ချက်ချင်းကြည့်ရှုပါ။' },
+          manager: { label: 'Manager', title: 'မန်နေဂျာ ထိန်းချုပ်မှု', desc: 'ဈေးနှုန်းများပြောင်းလဲခြင်း၊ QR codes ထုတ်ယူခြင်းနှင့် ပစ္စည်းစာရင်း စီမံခန့်ခွဲခြင်းတို့ကို လွယ်ကူစွာ ဆောင်ရွက်ပါ။' },
+          owner: { label: 'Owner', title: 'ပိုင်ရှင် ခြုံငုံသုံးသပ်မှု', desc: 'ဆိုင်ခွဲအားလုံး၏ Analytics၊ scan အရေအတွက်များနှင့် လုပ်ငန်းအခြေအနေကို တစ်နေရာတည်းမှ ကြည့်ရှုပါ။' }
+        },
+        play: 'ဗီဒီယိုကြည့်ရန်'
+      },
       modal: {
         title: 'InfoScan ကို စမ်းသပ်ကြည့်ပါ',
         successH3: 'စာရင်းသွင်းပြီးပါပြီ',
@@ -31,15 +44,7 @@ export function LandingPage() {
         showroom: 'ဆိုင်အမည်',
         submit: 'Demo ကြည့်ရန် စာရင်းသွင်းမည်'
       },
-      features: {
-        h2: 'InfoScan ၏ အဓိက အစိတ်အပိုင်းများ',
-        p: 'ခေတ်မီပြခန်းတစ်ခုအတွက် လိုအပ်သော အရာအားလုံး။',
-        items: [
-          { title: "Digital Concierge", desc: "သုံးစွဲသူများမှ QR ကို scan ဖတ်ရုံဖြင့် ပစ္စည်းအချက်အလက်များ၊ AI နှိုင်းယှဉ်ချက်များကို ချက်ချင်းကြည့်ရှုနိုင်မည်။", tag: "ဝယ်ယူသူများအတွက်" },
-          { title: "Inventory Mastery", desc: "ဈေးနှုန်းများကို စက္ကန့်ပိုင်းအတွင်း ပြောင်းလဲနိုင်ပြီး QR codes များကိုလည်း အလွယ်တကူ ထုတ်ယူနိုင်မည်။", tag: "မန်နေဂျာများအတွက်" },
-          { title: "Strategic Oversight", desc: "မည်သည့်ပစ္စည်းများ စိတ်ဝင်စားမှုအများဆုံးဖြစ်သည်ကို Analytics ဖြင့် တိကျစွာ သိရှိနိုင်မည်။", tag: "ဆိုင်ပိုင်ရှင်များအတွက်" }
-        ]
-      },
+
       solutions: {
         h2: ['သင့်လုပ်ငန်းအတွက်', 'အကောင်းဆုံး အဖြေများ'],
         p: 'သင်သည် နည်းပညာပစ္စည်းများ သို့မဟုတ် ဇိမ်ခံပစ္စည်းများ ရောင်းချသည်ဖြစ်စေ InfoScan က သင့်ပြခန်းအတွက် အကောင်းဆုံး ဝန်ဆောင်မှုပေးနိုင်ပါသည်။',
@@ -58,9 +63,9 @@ export function LandingPage() {
         h2: 'သင့်လုပ်ငန်းနှင့် ကိုက်ညီသော အစီအစဉ်များ',
         p: 'ပြခန်းတစ်ခုမှသည် လုပ်ငန်းကြီးများအထိ အကောင်းဆုံး ဝန်ဆောင်မှုများ။',
         plans: [
-          { name: 'Premium', price: '$49', desc: 'အသေးစား ဆိုင်ခွဲများအတွက် အပြည့်အဝ ဝန်ဆောင်မှု။', features: ['ဆိုင်ခွဲ ၅ ခုအထိ အသုံးပြုနိုင်ခြင်း', 'အကန့်အသတ်မရှိ ပစ္စည်းစာရင်း', 'AI Chat ဝန်ဆောင်မှု', 'အသေးစိတ် Analytics'] },
-          { name: 'Bundle', price: '$199', desc: 'ဆိုင်ခွဲများစွာရှိသော လုပ်ငန်းကြီးများအတွက်။', features: ['ဆိုင်ခွဲ ၂၀ အထိ အသုံးပြုနိုင်ခြင်း', 'ဗဟိုမှ ထိန်းချုပ်နိုင်ခြင်း', 'ဦးစားပေး Support ပေးခြင်း'], popular: true },
-          { name: 'API', price: 'Custom', desc: 'ကိုယ်ပိုင်စနစ်များနှင့် ချိတ်ဆက်လိုသူများအတွက်။', features: ['အကန့်အသတ်မရှိ API အသုံးပြုနိုင်ခြင်း', 'သီးသန့် Server ပေးခြင်း', 'SLA အာမခံချက် ပေးခြင်း'] }
+          { name: 'API Subscription', shops: 'ဆိုင် ၁ ခု', pro: '29,900', ultra: '39,900', features: ['API အသုံးပြုခွင့်', 'ပစ္စည်းစာရင်း စီမံခြင်း', 'QR Code ထုတ်ယူခြင်း', 'AI Chat ဝန်ဆောင်မှု'] },
+          { name: 'Subscription', shops: 'ဆိုင် ၅ ခု', pro: '49,900', ultra: '59,900', features: ['ဆိုင်ခွဲ ၅ ခု စီမံခြင်း', 'ဗဟိုမှ ထိန်းချုပ်ခြင်း', 'အသေးစိတ် Analytics', 'ဦးစားပေး Support'], popular: true },
+          { name: 'Custom Setup', shops: 'ဆိုင် ၁၀ ခု', basePrice: '၃၀ သိန်း', features: ['ဆိုင်ခွဲ ၁၀ ခုအထိ', 'သီးသန့် Server', 'SLA အာမခံချက်', 'စိတ်ကြိုက် ပြင်ဆင်ခြင်း'] }
         ]
       }
     },
@@ -73,6 +78,16 @@ export function LandingPage() {
         cta2: 'Watch Demo Video'
       },
       video: { playing: 'Demo Video Playing', desc: 'This is where your professional product walk-through video will reside.', replay: 'Replay intro', click: 'Click to Play Demo Video' },
+      workflow: {
+        h2: 'Workflow Demos',
+        p: 'See how InfoScan works for each user role in your showroom.',
+        tabs: {
+          customer: { label: 'Customer', title: 'Customer Experience', desc: 'Scan a QR code to instantly access product specs, AI-powered comparisons, and unbiased recommendations.' },
+          manager: { label: 'Manager', title: 'Manager Controls', desc: 'Update pricing across branches in seconds, generate QR codes, and manage inventory with ease.' },
+          owner: { label: 'Owner', title: 'Owner Overview', desc: 'View analytics across all branches, track scan volumes, and monitor business performance from one dashboard.' }
+        },
+        play: 'Play Video'
+      },
       modal: {
         title: 'Experience InfoScan',
         successH3: 'Request Received',
@@ -83,15 +98,7 @@ export function LandingPage() {
         showroom: 'Showroom Name',
         submit: 'Schedule My Demo'
       },
-      features: {
-        h2: 'The Pillars of InfoScan',
-        p: 'Everything you need to run a modern, high-conversion showroom.',
-        items: [
-          { title: "Digital Concierge", desc: "Customers scan a QR to get instant specs, AI comparisons, and zero-bias recommendations.", tag: "For Customers" },
-          { title: "Inventory Mastery", desc: "Update prices branch-wide in seconds and export QR codes instantly.", tag: "For Managers" },
-          { title: "Strategic Oversight", desc: "Global analytics across all branches. See exactly which products are being scanned.", tag: "For Owners" }
-        ]
-      },
+
       solutions: {
         h2: ['Tailored for', 'High-Impact Retail'],
         p: 'Whether you sell cutting-edge gadgets or bespoke luxury goods, InfoScan adapts to your showroom\'s unique flow.',
@@ -110,9 +117,9 @@ export function LandingPage() {
         h2: 'Simple, Transparent Plans',
         p: 'Choose the perfect plan for your showroom scale.',
         plans: [
-          { name: 'Premium', price: '$49', desc: 'Full-featured access for small retail networks.', features: ['Up to 5 Branches', 'Unlimited SKUs', 'AI Chat enabled', 'Advanced Analytics'] },
-          { name: 'Bundle', price: '$199', desc: 'Optimized for large multi-branch networks.', features: ['Up to 20 Branches', 'Centralized Control', 'Priority Support'], popular: true },
-          { name: 'API', price: 'Custom', desc: 'For enterprise integration and high-volume data.', features: ['Full API Endpoints', 'Dedicated Infrastructure', 'SLA Guarantee'] }
+          { name: 'API Subscription', shops: '1 Shop', pro: '29,900', ultra: '39,900', features: ['Full API Access', 'Inventory Management', 'QR Code Generation', 'AI Chat Enabled'] },
+          { name: 'Subscription', shops: '5 Shops', pro: '49,900', ultra: '59,900', features: ['5 Branch Management', 'Centralized Control', 'Advanced Analytics', 'Priority Support'], popular: true },
+          { name: 'Custom Setup', shops: '10 Shops', basePrice: '30 Lakhs', features: ['Up to 10 Branches', 'Dedicated Infrastructure', 'SLA Guarantee', 'Custom Configuration'] }
         ]
       }
     }
@@ -145,7 +152,6 @@ export function LandingPage() {
             </div>
             
             <div className="hidden lg:flex items-center gap-8">
-              <a href="#features" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.features}</a>
               <a href="#solutions" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.solutions}</a>
               <a href="#pricing" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.pricing}</a>
             </div>
@@ -208,6 +214,76 @@ export function LandingPage() {
             </div>
           </div>
         </div>
+        {/* Demo Workflow Section */}
+        <div className="mt-32 max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">{t.workflow.h2}</h2>
+            <p className="text-lg text-slate-500 max-w-xl mx-auto">{t.workflow.p}</p>
+          </div>
+
+          <div className="relative flex flex-col lg:flex-row gap-0" ref={workflowVideoRef}>
+            {/* Video Player Area */}
+            <div className="flex-1 relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary/20 to-orange-400/20 blur-sm"></div>
+              <div
+                className="relative aspect-video bg-brand-dark border border-slate-800 shadow-2xl overflow-hidden flex items-center justify-center cursor-pointer"
+                onClick={() => setWorkflowPlaying(true)}
+              >
+                {workflowPlaying ? (
+                  <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
+                    <div className="mb-4">
+                      <span className="inline-block px-3 py-1 bg-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-widest">
+                        {t.workflow.tabs[activeWorkflowTab].label}
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3 uppercase tracking-widest font-serif">
+                      {t.workflow.tabs[activeWorkflowTab].title}
+                    </h3>
+                    <p className="text-slate-400 max-w-md text-sm leading-relaxed">
+                      {t.workflow.tabs[activeWorkflowTab].desc}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      className="mt-6 text-slate-400"
+                      onClick={(e) => { e.stopPropagation(); setWorkflowPlaying(false) }}
+                    >
+                      {t.video.replay}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <div className="size-20 bg-brand-primary/20 rounded-full flex items-center justify-center mx-auto border border-brand-primary/30 hover:scale-110 transition-transform">
+                      <div className="size-0 border-y-[12px] border-y-transparent border-l-[20px] border-l-brand-primary ml-2"></div>
+                    </div>
+                    <p className="text-slate-400 font-medium uppercase tracking-[0.2em] text-[10px]">
+                      {t.workflow.tabs[activeWorkflowTab].title}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Vertical Tab Buttons */}
+            <div className="flex lg:flex-col w-full lg:w-auto">
+              {(['customer', 'manager', 'owner'] as const).map((role) => (
+                <button
+                  key={role}
+                  onClick={() => { setActiveWorkflowTab(role); setWorkflowPlaying(false) }}
+                  className={`flex-1 lg:flex-none px-6 lg:px-10 py-6 lg:py-10 text-left border transition-all duration-300 ${
+                    activeWorkflowTab === role
+                      ? 'bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20'
+                      : 'bg-white text-slate-600 border-slate-200 hover:bg-brand-bg hover:border-brand-primary/30 hover:text-brand-primary'
+                  }`}
+                >
+                  <span className="text-xs font-bold uppercase tracking-[0.25em] block">
+                    {t.workflow.tabs[role].label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* Demo Modal */}
@@ -237,25 +313,7 @@ export function LandingPage() {
         )}
       </Modal>
 
-      {/* Features Grid */}
-      <section id="features" className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">{t.features.h2}</h2>
-            <p className="text-lg text-slate-500">{t.features.p}</p>
-          </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {t.features.items.map((pillar, i) => (
-              <div key={i} className="group p-10 bg-brand-bg border border-transparent hover:border-brand-primary transition-all">
-                <Badge className="mb-6 uppercase tracking-widest text-[9px] rounded-none">{pillar.tag}</Badge>
-                <h3 className="text-2xl font-bold text-brand-dark mb-4 group-hover:text-brand-primary transition-colors uppercase font-serif">{pillar.title}</h3>
-                <p className="text-slate-600 leading-relaxed text-sm">{pillar.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Solutions Section */}
       <section id="solutions" className="py-32 bg-brand-bg/30">
@@ -311,12 +369,35 @@ export function LandingPage() {
                 {plan.popular && (
                   <div className="absolute top-0 right-0 bg-brand-primary text-white text-[8px] font-bold uppercase px-3 py-1 tracking-[0.2em]">Popular</div>
                 )}
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-5xl font-bold text-brand-dark font-serif tracking-tighter">{plan.price}</span>
-                  {plan.price !== 'Free' && plan.price !== 'Custom' && <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">/mo</span>}
-                </div>
-                <p className="text-slate-600 text-sm mb-8 h-12 leading-relaxed">{plan.desc}</p>
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{plan.name}</h3>
+                <span className="text-[10px] font-bold text-brand-primary uppercase tracking-widest mb-6">{plan.shops}</span>
+
+                {'basePrice' in plan ? (
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold text-brand-dark font-serif tracking-tighter">{plan.basePrice}</span>
+                    </div>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'MY' ? 'အခြေခံ စနစ်တပ်ဆင်ခ' : 'Base Setup Price'}</p>
+                  </div>
+                ) : (
+                  <div className="mb-8 space-y-3">
+                    <div className="flex items-center justify-between bg-slate-50 px-4 py-3 border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pro</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold text-brand-dark font-serif tracking-tighter">{plan.pro}</span>
+                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Ks/mo</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between bg-gradient-to-r from-brand-primary to-orange-400 px-4 py-3">
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">Ultra</span>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold text-white font-serif tracking-tighter">{plan.ultra}</span>
+                        <span className="text-white/70 text-[9px] font-bold uppercase tracking-widest">Ks/mo</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-4 mb-10 flex-1">
                   {plan.features.map((feature, j) => (
                     <div key={j} className="flex items-center gap-3 text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -326,7 +407,7 @@ export function LandingPage() {
                   ))}
                 </div>
                 <Button fullWidth variant={plan.popular ? 'primary' : 'secondary'} className="rounded-none" onClick={() => setShowDemoModal(true)}>
-                  {plan.price === 'Custom' ? (lang === 'MY' ? 'ဆက်သွယ်ရန်' : 'Contact Sales') : (lang === 'MY' ? 'စတင်မည်' : 'Get Started')}
+                  {'basePrice' in plan ? (lang === 'MY' ? 'ဆက်သွယ်ရန်' : 'Contact Sales') : (lang === 'MY' ? 'စတင်မည်' : 'Get Started')}
                 </Button>
               </div>
             ))}
