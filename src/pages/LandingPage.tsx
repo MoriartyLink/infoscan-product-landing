@@ -6,7 +6,7 @@ import { Modal } from '@/components/ui/Modal'
 type Language = 'EN' | 'MY'
 
 export function LandingPage() {
-  const [lang, setLang] = useState<Language>('MY')
+  const [lang, setLang] = useState<Language>('EN')
   const [showDemoModal, setShowDemoModal] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
