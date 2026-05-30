@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
-
 import { Modal } from '@/components/ui/Modal'
 
 type Language = 'EN' | 'MY'
@@ -10,7 +10,17 @@ export function LandingPage() {
   const [showDemoModal, setShowDemoModal] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [activeWorkflowTab, setActiveWorkflowTab] = useState<'manager' | 'owner' | 'customer'>('manager')
-  const [workflowPlaying, setWorkflowPlaying] = useState(false)
+  const [videoFading, setVideoFading] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  const handleTabChange = useCallback((role: 'manager' | 'owner' | 'customer') => {
+    if (role === activeWorkflowTab) return
+    setVideoFading(true)
+    setTimeout(() => {
+      setActiveWorkflowTab(role)
+      setVideoFading(false)
+    }, 180)
+  }, [activeWorkflowTab])
 
   const content = {
     MY: {
@@ -99,13 +109,15 @@ export function LandingPage() {
           desc: 'InfoScan သည် ဤပြဿနာကို ဖြေရှင်းပေးရန် ဒစ်ဂျစ်တယ်နည်းပညာဖြင့် သင့်ပြခန်းကို ၂၄ နာရီပတ်လုံး အဆင့်မြင့် ဝန်ဆောင်မှုပေးနိုင်ရန် ဖန်တီးထားပါသည်။'
         }
       },
-      pricing: {
-        h2: 'သင့်လုပ်ငန်းနှင့် ကိုက်ညီသော အစီအစဉ်များ',
-        p: 'ပြခန်းတစ်ခုမှသည် လုပ်ငန်းကြီးများအထိ အကောင်းဆုံး ဝန်ဆောင်မှုများ။',
-        plans: [
-          { name: 'API Subscription', shops: 'ဆိုင် ၁ ခု', pro: '29,900', ultra: '39,900', features: ['API အသုံးပြုခွင့်', 'ပစ္စည်းစာရင်း စီမံခြင်း', 'QR Code ထုတ်ယူခြင်း', 'AI Chat ဝန်ဆောင်မှု'] },
-          { name: 'Subscription', shops: 'ဆိုင် ၅ ခု', pro: '49,900', ultra: '59,900', features: ['ဆိုင်ခွဲ ၅ ခု စီမံခြင်း', 'ဗဟိုမှ ထိန်းချုပ်ခြင်း', 'အသေးစိတ် Analytics', 'ဦးစားပေး Support'], popular: true },
-          { name: 'Custom Setup', shops: 'ဆိုင် ၁၀ ခု', basePrice: '၃၀ သိန်း', features: ['ဆိုင်ခွဲ ၁၀ ခုအထိ', 'သီးသန့် Server', 'SLA အာမခံချက်', 'စိတ်ကြိုက် ပြင်ဆင်ခြင်း'] }
+      apiIntegration: {
+        eyebrow: 'Developer Ready',
+        h2: ['POS နှင့်', 'API ချိတ်ဆက်ခြင်း'],
+        p: 'API Key တစ်ခုဖြင့် သင့် POS စနစ်နှင့် InfoScan ကို မိနစ်ပိုင်းအတွင်း ချိတ်ဆက်နိုင်သည်။ ဈေးနှုန်းနှင့် စာရင်းများ အလိုအလျောက် Sync ဖြစ်သည်။',
+        features: [
+          { title: 'API Key တစ်ချက်ဖြင့်', desc: 'Dashboard မှ API Key ထုတ်ယူပြီး မိနစ်ပိုင်းအတွင်း ချိတ်ဆက်ပါ။' },
+          { title: 'Real-Time Sync', desc: 'POS တွင် ဈေးနှုန်းပြောင်းသည်နှင့် QR Code များ ချက်ချင်း အပ်ဒိတ်ဖြစ်သည်။' },
+          { title: 'POS မည်သည့်အမျိုးအစားမဆို', desc: 'ကျော်ကြားသော POS Platform များနှင့် REST API မှတဆင့် Custom System များနှင့်လည်း ချိတ်ဆက်နိုင်သည်။' },
+          { title: 'Webhook Events', desc: 'Scan ဖြစ်ချိန်၊ ဈေးနှုန်းပြောင်းချိန်နှင့် အခြား Event များကို အချိန်နှင့်တပြေးညီ သိရှိနိုင်သည်။' },
         ]
       }
     },
@@ -195,15 +207,17 @@ export function LandingPage() {
           desc: 'InfoScan solves this by turning every physical product into a 24/7 AI-powered digital twin — available the moment a customer points their phone at it.'
         }
       },
-      pricing: {
-        h2: 'Simple, Transparent Plans',
-        p: 'From a single showroom to a multi-branch operation.',
-        plans: [
-          { name: 'API Subscription', shops: '1 Shop', pro: '29,900', ultra: '39,900', features: ['Full API Access', 'Inventory Management', 'QR Code Generation', 'AI Chat Enabled'] },
-          { name: 'Subscription', shops: '5 Shops', pro: '49,900', ultra: '59,900', features: ['5 Branch Management', 'Centralized Control', 'Advanced Analytics', 'Priority Support'], popular: true },
-          { name: 'Custom Setup', shops: '10 Shops', basePrice: '30 Lakhs', features: ['Up to 10 Branches', 'Dedicated Infrastructure', 'SLA Guarantee', 'Custom Configuration'] }
+      apiIntegration: {
+        eyebrow: 'Developer Ready',
+        h2: ['POS &', 'API Integration'],
+        p: 'Connect InfoScan to your existing POS system with a single API key. Pricing and inventory changes sync in real time — no manual work, no delays.',
+        features: [
+          { title: 'API Key in Seconds', desc: 'Generate your key from the dashboard and start integrating immediately. No approval process.' },
+          { title: 'Real-Time Sync', desc: 'Update a price in your POS and every QR code in every branch reflects it instantly.' },
+          { title: 'Any POS System', desc: 'Works with popular platforms or any custom system via our REST API.' },
+          { title: 'Webhook Events', desc: 'Get notified on scan events, price updates, and inventory changes as they happen.' },
         ]
-      }
+      },
     }
   }
 
@@ -225,13 +239,13 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-brand-dark uppercase tracking-[0.2em] font-serif">InfoScan</span>
+              <img src="/logo.jpg" alt="InfoScan" className="h-8 w-auto object-contain" />
             </div>
 
             <div className="hidden lg:flex items-center gap-8">
               <a href="#how-it-works" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{lang === 'EN' ? 'How It Works' : 'အသုံးပြုပုံ'}</a>
               <a href="#solutions" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.solutions}</a>
-              <a href="#pricing" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.pricing}</a>
+              <Link to="/pricing" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.pricing}</Link>
             </div>
 
             <div className="flex items-center gap-4">
@@ -279,70 +293,84 @@ export function LandingPage() {
 
           {/* Metrics Strip */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-0 border border-orange-100 mb-20 bg-white/60">
-            {t.metrics.map((m, i) => (
-              <div key={i} className={`py-8 px-6 text-center ${i < t.metrics.length - 1 ? 'border-r border-orange-100' : ''}`}>
+            {t.metrics.map((m, i) => {
+              // Mobile (2-col): col 0 gets border-r, row 0 (items 0,1) gets border-b
+              // Desktop (4-col): items 0,1,2 get border-r
+              const borderR = i === 0 ? 'border-r border-orange-100'
+                : i === 1 ? 'md:border-r border-orange-100'
+                : i === 2 ? 'border-r border-orange-100'
+                : ''
+              const borderB = i < 2 ? 'border-b md:border-b-0 border-orange-100' : ''
+              return (
+              <div key={i} className={`py-8 px-6 text-center ${borderR} ${borderB}`}>
                 <div className="text-3xl md:text-4xl font-bold text-brand-dark font-serif tracking-tighter">{m.value}</div>
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-2 leading-tight">{m.label}</div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
         </div>
 
         {/* Workflow Demo Section */}
-        <div className="mt-32 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+        <div className="mt-16 md:mt-32 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-5xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">{t.workflow.h2}</h2>
             <p className="text-lg text-slate-500 max-w-xl mx-auto">{t.workflow.p}</p>
           </div>
 
-          <div className="relative flex flex-col lg:flex-row gap-0">
-            {/* Video Player Area */}
-            <div className="flex-1 relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary/20 to-orange-400/20 blur-sm"></div>
-              <div
-                className="relative aspect-video bg-brand-dark border border-slate-800 shadow-2xl overflow-hidden flex items-center justify-center cursor-pointer"
-                onClick={() => setWorkflowPlaying(true)}
-              >
-                {workflowPlaying ? (
-                  <video
-                    key={activeWorkflowTab}
-                    src={`/demo-videos/${activeWorkflowTab}-demo.mp4`}
-                    autoPlay
-                    controls
-                    className="w-full h-full object-cover animate-in fade-in duration-500"
-                  />
-                ) : (
-                  <div className="text-center space-y-4">
-                    <div className="size-20 bg-brand-primary/20 rounded-full flex items-center justify-center mx-auto border border-brand-primary/30 hover:scale-110 transition-transform">
-                      <div className="size-0 border-y-[12px] border-y-transparent border-l-[20px] border-l-brand-primary ml-2"></div>
-                    </div>
-                    <p className="text-slate-400 font-medium uppercase tracking-[0.2em] text-[10px]">
-                      {t.workflow.tabs[activeWorkflowTab].title}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Vertical Tab Buttons */}
-            <div className="flex lg:flex-col w-full lg:w-auto">
+          {/* Tab Bar */}
+          <div className="mb-6">
+            <div className="flex w-full bg-slate-100 p-1 gap-0.5 border border-slate-200">
               {(['manager', 'owner', 'customer'] as const).map((role) => (
                 <button
                   key={role}
-                  onClick={() => { setActiveWorkflowTab(role); setWorkflowPlaying(false) }}
-                  className={`flex-1 lg:flex-none px-6 lg:px-10 py-6 lg:py-10 text-left border transition-all duration-300 ${
+                  onClick={() => handleTabChange(role)}
+                  className={`relative flex-1 py-2.5 px-2 sm:px-8 text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.22em] transition-all duration-250 ${
                     activeWorkflowTab === role
-                      ? 'bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20'
-                      : 'bg-white text-slate-600 border-slate-200 hover:bg-brand-bg hover:border-brand-primary/30 hover:text-brand-primary'
+                      ? 'bg-brand-primary text-white shadow-sm'
+                      : 'text-slate-400 hover:text-brand-primary hover:bg-white/70'
                   }`}
                 >
-                  <span className="text-xs font-bold uppercase tracking-[0.25em] block">
-                    {t.workflow.tabs[role].label}
-                  </span>
+                  {t.workflow.tabs[role].label}
+                  {activeWorkflowTab === role && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-white/50" />
+                  )}
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Video Player */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary/20 to-orange-400/20 blur-md pointer-events-none" />
+            <div
+              className="relative aspect-video bg-brand-dark border border-slate-700 shadow-2xl overflow-hidden"
+              style={{ transition: 'opacity 180ms ease', opacity: videoFading ? 0 : 1 }}
+            >
+              <video
+                ref={videoRef}
+                key={activeWorkflowTab}
+                src={`/demo-videos/${activeWorkflowTab}-demo.mov`}
+                autoPlay
+                controls
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Tab description */}
+          <div
+            className="mt-6 text-center"
+            style={{ transition: 'opacity 180ms ease', opacity: videoFading ? 0 : 1 }}
+          >
+            <h3 className="text-sm font-bold text-brand-dark uppercase tracking-widest font-serif mb-1">
+              {t.workflow.tabs[activeWorkflowTab].title}
+            </h3>
+            <p className="text-slate-500 text-sm max-w-xl mx-auto">
+              {t.workflow.tabs[activeWorkflowTab].desc}
+            </p>
           </div>
         </div>
       </section>
@@ -374,23 +402,66 @@ export function LandingPage() {
         )}
       </Modal>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-32 bg-brand-dark">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-4 uppercase tracking-tight font-serif">{t.howItWorks.h2}</h2>
-            <p className="text-lg text-slate-400">{t.howItWorks.p}</p>
+      {/* POS & API Integration Section */}
+      <section id="api-integration" className="py-24 md:py-32 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-brand-primary/10 border border-brand-primary/20 px-4 py-2 mb-6">
+              <span className="size-1.5 bg-brand-primary rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.25em]">{t.apiIntegration.eyebrow}</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">
+              {t.apiIntegration.h2[0]} <span className="text-brand-primary italic">{t.apiIntegration.h2[1]}</span>
+            </h2>
+            <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">{t.apiIntegration.p}</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-0">
+          {/* Video */}
+          <div className="relative mb-12">
+            <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary/20 to-orange-400/20 blur-md pointer-events-none" />
+            <div className="relative aspect-video bg-brand-dark border border-orange-100 shadow-2xl overflow-hidden">
+              <video
+                src="/demo-videos/pos-integration-demo.mov"
+                autoPlay
+                controls
+                playsInline
+                loop
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Feature grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-orange-100">
+            {t.apiIntegration.features.map((f, i) => (
+              <div key={i} className="p-6 md:p-8 bg-white">
+                <div className="w-6 h-0.5 bg-brand-primary mb-4" />
+                <h3 className="text-xs font-bold text-brand-dark uppercase tracking-widest mb-2 font-serif">{f.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-32 bg-brand-bg/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">{t.howItWorks.h2}</h2>
+            <p className="text-lg text-slate-500">{t.howItWorks.p}</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-0 border border-orange-100 bg-white/60">
             {t.howItWorks.steps.map((step, i) => (
-              <div key={i} className={`relative p-10 ${i < t.howItWorks.steps.length - 1 ? 'border-b md:border-b-0 md:border-r border-slate-700' : ''}`}>
+              <div key={i} className={`relative p-10 ${i < t.howItWorks.steps.length - 1 ? 'border-b md:border-b-0 md:border-r border-orange-100' : ''}`}>
                 {/* Step number */}
-                <div className="text-[80px] font-bold text-white/30 font-serif leading-none mb-6 select-none">{step.num}</div>
+                <div className="text-[80px] font-bold text-brand-dark font-serif leading-none mb-6 select-none">{step.num}</div>
                 {/* Orange accent line */}
                 <div className="w-8 h-0.5 bg-brand-primary mb-6"></div>
-                <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-4 font-serif">{step.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
+                <h3 className="text-xl font-bold text-brand-dark uppercase tracking-widest mb-4 font-serif">{step.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{step.desc}</p>
                 {/* Connector arrow for desktop */}
                 {i < t.howItWorks.steps.length - 1 && (
                   <div className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 z-10">
@@ -487,63 +558,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">{t.pricing.h2}</h2>
-            <p className="text-lg text-slate-500">{t.pricing.p}</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {t.pricing.plans.map((plan, i) => (
-              <div key={i} className={`relative p-10 border ${plan.popular ? 'border-brand-primary bg-brand-bg' : 'border-slate-100 bg-white'} flex flex-col`}>
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-brand-primary text-white text-[8px] font-bold uppercase px-3 py-1 tracking-[0.2em]">Popular</div>
-                )}
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{plan.name}</h3>
-                <span className="text-[10px] font-bold text-brand-primary uppercase tracking-widest mb-6">{plan.shops}</span>
-
-                {'basePrice' in plan ? (
-                  <div className="mb-8">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-4xl font-bold text-brand-dark font-serif tracking-tighter">{plan.basePrice}</span>
-                    </div>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'MY' ? 'အခြေခံ စနစ်တပ်ဆင်ခ' : 'Base Setup Price'}</p>
-                  </div>
-                ) : (
-                  <div className="mb-8 space-y-3">
-                    <div className="flex items-center justify-between bg-slate-50 px-4 py-3 border border-slate-100">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pro</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-brand-dark font-serif tracking-tighter">{plan.pro}</span>
-                        <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Ks/mo</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between bg-gradient-to-r from-brand-primary to-orange-400 px-4 py-3">
-                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">Ultra</span>
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-white font-serif tracking-tighter">{plan.ultra}</span>
-                        <span className="text-white/70 text-[9px] font-bold uppercase tracking-widest">Ks/mo</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-4 mb-10 flex-1">
-                  {plan.features.map((feature, j) => (
-                    <div key={j} className="flex items-center gap-3 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      <span className="text-brand-primary">✓</span>
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-                <Button fullWidth variant={plan.popular ? 'primary' : 'secondary'} className="rounded-none" onClick={() => setShowDemoModal(true)}>
-                  {'basePrice' in plan ? (lang === 'MY' ? 'ဆက်သွယ်ရန်' : 'Contact Sales') : (lang === 'MY' ? 'စတင်မည်' : 'Get Started')}
-                </Button>
-              </div>
-            ))}
-          </div>
+      {/* Pricing CTA */}
+      <section className="py-20 bg-white border-t border-orange-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4 uppercase tracking-tight font-serif">
+            {lang === 'EN' ? 'Ready to Get Started?' : 'စတင်ရန် အဆင်သင့်ဖြစ်ပြီလား?'}
+          </h2>
+          <p className="text-slate-500 mb-8 max-w-md mx-auto">
+            {lang === 'EN' ? 'View our simple, transparent plans — from a single showroom to a multi-branch operation.' : 'ပြခန်းတစ်ခုမှသည် လုပ်ငန်းကြီးများအထိ ကျွန်ုပ်တို့၏ အစီအစဉ်များကို ကြည့်ပါ။'}
+          </p>
+          <Link to="/pricing">
+            <Button size="lg" className="px-12 rounded-none">
+              {lang === 'EN' ? 'View Pricing' : 'ဈေးနှုန်းများ ကြည့်ရန်'}
+            </Button>
+          </Link>
         </div>
       </section>
 
@@ -551,7 +579,7 @@ export function LandingPage() {
       <footer className="bg-white py-16 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-[0.2em] font-serif">InfoScan</span>
+            <img src="/logo.jpg" alt="InfoScan" className="h-6 w-auto object-contain opacity-70" />
             <span className="text-slate-400 text-[10px] tracking-widest ml-4">© 2026</span>
           </div>
           <div className="flex gap-10 text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
