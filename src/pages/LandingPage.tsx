@@ -230,26 +230,32 @@ export function LandingPage() {
                 onClick={() => setWorkflowPlaying(true)}
               >
                 {workflowPlaying ? (
-                  <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
-                    <div className="mb-4">
-                      <span className="inline-block px-3 py-1 bg-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-widest">
-                        {t.workflow.tabs[activeWorkflowTab].label}
-                      </span>
+                  activeWorkflowTab === 'manager' ? (
+                    <video src="/demo-videos/manager-demo.mov" autoPlay controls className="w-full h-full object-cover animate-in fade-in duration-500" />
+                  ) : activeWorkflowTab === 'owner' ? (
+                    <video src="/demo-videos/owner-demo.mov" autoPlay controls className="w-full h-full object-cover animate-in fade-in duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
+                      <div className="mb-4">
+                        <span className="inline-block px-3 py-1 bg-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-widest">
+                          {t.workflow.tabs[activeWorkflowTab].label}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-3 uppercase tracking-widest font-serif">
+                        {t.workflow.tabs[activeWorkflowTab].title}
+                      </h3>
+                      <p className="text-slate-400 max-w-md text-sm leading-relaxed">
+                        {t.workflow.tabs[activeWorkflowTab].desc}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        className="mt-6 text-slate-400"
+                        onClick={(e) => { e.stopPropagation(); setWorkflowPlaying(false) }}
+                      >
+                        {t.video.replay}
+                      </Button>
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-3 uppercase tracking-widest font-serif">
-                      {t.workflow.tabs[activeWorkflowTab].title}
-                    </h3>
-                    <p className="text-slate-400 max-w-md text-sm leading-relaxed">
-                      {t.workflow.tabs[activeWorkflowTab].desc}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      className="mt-6 text-slate-400"
-                      onClick={(e) => { e.stopPropagation(); setWorkflowPlaying(false) }}
-                    >
-                      {t.video.replay}
-                    </Button>
-                  </div>
+                  )
                 ) : (
                   <div className="text-center space-y-4">
                     <div className="size-20 bg-brand-primary/20 rounded-full flex items-center justify-center mx-auto border border-brand-primary/30 hover:scale-110 transition-transform">
