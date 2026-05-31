@@ -117,6 +117,7 @@ export function PricingPage() {
   const [showDemoModal, setShowDemoModal] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const t = content[lang]
 
@@ -134,9 +135,9 @@ export function PricingPage() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-brand-bg/80 backdrop-blur-md border-b border-orange-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 sm:h-20">
             <Link to="/" className="flex items-center gap-2">
-              <img src="/logo.jpg" alt="InfoScan" className="h-8 w-auto object-contain" />
+              <img src="/logo.jpg" alt="InfoScan" className="h-7 sm:h-8 w-auto object-contain" />
             </Link>
 
             <div className="hidden lg:flex items-center gap-8">
@@ -145,8 +146,8 @@ export function PricingPage() {
               <span className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.2em]">{t.nav.pricing}</span>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex bg-slate-100 p-1 rounded-none mr-2">
+            <div className="flex items-center gap-3">
+              <div className="flex bg-slate-100 p-1 rounded-none">
                 <button
                   onClick={() => setLang('EN')}
                   className={`px-3 py-1 text-[10px] font-bold transition-all ${lang === 'EN' ? 'bg-white text-brand-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
@@ -160,10 +161,51 @@ export function PricingPage() {
                   MY
                 </button>
               </div>
-              <Button size="sm" onClick={() => setShowDemoModal(true)}>{t.nav.demo}</Button>
+              <Button size="sm" className="hidden sm:inline-flex" onClick={() => setShowDemoModal(true)}>{t.nav.demo}</Button>
+              {/* Hamburger button — mobile only */}
+              <button
+                onClick={() => setMobileMenuOpen(o => !o)}
+                className="lg:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
+                aria-label="Toggle menu"
+              >
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-orange-100 bg-brand-bg/95 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-0">
+              <Link
+                to="/#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 text-[11px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em] border-b border-orange-100"
+              >
+                {t.nav.howItWorks}
+              </Link>
+              <Link
+                to="/#solutions"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 text-[11px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em] border-b border-orange-100"
+              >
+                {t.nav.solutions}
+              </Link>
+              <span className="py-3 text-[11px] font-bold text-brand-primary uppercase tracking-[0.2em] border-b border-orange-100">
+                {t.nav.pricing}
+              </span>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true) }}
+                className="mt-3 w-full py-3 bg-brand-primary text-white text-[11px] font-bold uppercase tracking-[0.2em] text-center"
+              >
+                {t.nav.demo}
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero */}
@@ -173,7 +215,7 @@ export function PricingPage() {
             <span className="size-1.5 bg-brand-primary rounded-full animate-pulse" />
             <span className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.25em]">{t.hero.eyebrow}</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-brand-dark mb-4 leading-[1.05] uppercase font-serif">
+          <h1 className="text-3xl md:text-6xl font-bold tracking-tighter text-brand-dark mb-4 leading-[1.05] uppercase font-serif">
             {t.hero.h1[0]} <span className="text-brand-primary italic">{t.hero.h1[1]}</span>
           </h1>
           <p className="text-lg text-slate-500 max-w-xl mx-auto">{t.hero.p}</p>
@@ -183,11 +225,11 @@ export function PricingPage() {
       {/* Pricing Cards */}
       <section className="py-24 bg-white flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {t.plans.map((plan, i) => (
               <div
                 key={i}
-                className={`relative p-10 border flex flex-col ${
+                className={`relative p-6 md:p-10 border flex flex-col ${
                   plan.popular ? 'border-brand-primary bg-brand-bg' : 'border-slate-100 bg-white'
                 }`}
               >

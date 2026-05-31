@@ -11,6 +11,7 @@ export function LandingPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [activeWorkflowTab, setActiveWorkflowTab] = useState<'manager' | 'owner' | 'customer'>('manager')
   const [videoFading, setVideoFading] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const handleTabChange = useCallback((role: 'manager' | 'owner' | 'customer') => {
@@ -237,9 +238,9 @@ export function LandingPage() {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-brand-bg/80 backdrop-blur-md border-b border-orange-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 sm:h-20">
             <div className="flex items-center gap-2">
-              <img src="/logo.jpg" alt="InfoScan" className="h-8 w-auto object-contain" />
+              <img src="/logo.jpg" alt="InfoScan" className="h-7 sm:h-8 w-auto object-contain" />
             </div>
 
             <div className="hidden lg:flex items-center gap-8">
@@ -248,7 +249,7 @@ export function LandingPage() {
               <Link to="/pricing" className="text-[10px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em]">{t.nav.pricing}</Link>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="flex bg-slate-100 p-1 rounded-none">
                 <button
                   onClick={() => setLang('EN')}
@@ -263,9 +264,54 @@ export function LandingPage() {
                   MY
                 </button>
               </div>
+              {/* Hamburger button — mobile only */}
+              <button
+                onClick={() => setMobileMenuOpen(o => !o)}
+                className="lg:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5"
+                aria-label="Toggle menu"
+              >
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-5 h-0.5 bg-slate-600 transition-all duration-200 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-orange-100 bg-brand-bg/95 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-0">
+              <a
+                href="#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 text-[11px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em] border-b border-orange-100"
+              >
+                {lang === 'EN' ? 'How It Works' : 'အသုံးပြုပုံ'}
+              </a>
+              <a
+                href="#solutions"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 text-[11px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em] border-b border-orange-100"
+              >
+                {t.nav.solutions}
+              </a>
+              <Link
+                to="/pricing"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-3 text-[11px] font-bold text-slate-600 hover:text-brand-primary transition-colors uppercase tracking-[0.2em] border-b border-orange-100"
+              >
+                {t.nav.pricing}
+              </Link>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setShowDemoModal(true) }}
+                className="mt-3 w-full py-3 bg-brand-primary text-white text-[11px] font-bold uppercase tracking-[0.2em] text-center"
+              >
+                {t.nav.demo}
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -454,7 +500,7 @@ export function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-0 border border-orange-100 bg-white/60">
             {t.howItWorks.steps.map((step, i) => (
-              <div key={i} className={`relative p-10 ${i < t.howItWorks.steps.length - 1 ? 'border-b md:border-b-0 md:border-r border-orange-100' : ''}`}>
+              <div key={i} className={`relative p-6 md:p-10 ${i < t.howItWorks.steps.length - 1 ? 'border-b md:border-b-0 md:border-r border-orange-100' : ''}`}>
                 {/* Step number */}
                 <div className="text-[80px] font-bold text-brand-dark font-serif leading-none mb-6 select-none">{step.num}</div>
                 {/* Orange accent line */}
@@ -502,7 +548,7 @@ export function LandingPage() {
 
             <div className="relative">
               <div className="absolute -inset-4 bg-orange-200/50 blur-3xl"></div>
-              <div className="relative bg-white p-12 shadow-2xl border border-orange-50">
+              <div className="relative bg-white p-6 md:p-12 shadow-2xl border border-orange-50">
                 <div className="flex flex-col h-full justify-center">
                   <h3 className="text-xs font-bold text-brand-primary uppercase tracking-[0.3em] mb-8">{t.solutions.challenge.title}</h3>
                   <p className="text-2xl text-brand-dark leading-tight italic font-serif">
@@ -523,7 +569,7 @@ export function LandingPage() {
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] text-center mb-10">{t.solutions.comparison.title}</h3>
             <div className="grid md:grid-cols-2 gap-0 border border-slate-200">
               {/* Before */}
-              <div className="p-10 border-b md:border-b-0 md:border-r border-slate-200 bg-white">
+              <div className="p-6 md:p-10 border-b md:border-b-0 md:border-r border-slate-200 bg-white">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="size-2 rounded-full bg-slate-300"></div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.25em]">{t.solutions.comparison.before.label}</span>
@@ -538,7 +584,7 @@ export function LandingPage() {
                 </div>
               </div>
               {/* After */}
-              <div className="p-10 bg-brand-bg">
+              <div className="p-6 md:p-10 bg-brand-bg">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="size-2 rounded-full bg-brand-primary"></div>
                   <span className="text-[10px] font-bold text-brand-primary uppercase tracking-[0.25em]">{t.solutions.comparison.after.label}</span>
